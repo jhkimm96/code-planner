@@ -57,7 +57,8 @@ description: 코드 파일을 새로 만들거나 구조를 바꾸기 전에 사
 
 ## 계획 파일
 
-위치: 프로젝트 루트의 `docs/code-plans/YYYY-MM-DD-<작업명>.md`. 경로는 프로젝트 루트 기준,
+위치: git 저장소 루트의 `docs/code-plans/YYYY-MM-DD-<작업명>.md`. 모노레포나 하위 폴더에서
+작업해도 계획은 반드시 git 루트에 둔다(훅이 찾는 기준). 경로는 git 루트 기준,
 `/` 구분, 따옴표 없이 쓴다. `files`에는 테스트 파일도 넣는다. glob(`src/**/*.py`)을 쓸 수 있다.
 
 ```markdown

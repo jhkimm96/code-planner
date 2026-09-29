@@ -1,14 +1,14 @@
 {
   "name": "code-planner",
   "description": "code-planner 플러그인 마켓플레이스",
-  "owner": { "name": "jhkimm96" },
+  "owner": { "name": "jhkim" },
   "plugins": [
     {
       "name": "code-planner",
       "description": "코드를 쓰기 전에 질문 → 계획 → 승인을 거치게 하고, 규칙 코드는 테스트를 먼저 쓰게 하는 스킬과 훅",
       "version": "0.1.0",
       "source": "./",
-      "author": { "name": "jhkimm96" }
+      "author": { "name": "jhkim" }
     }
   ]
 }
