@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { readAcceptedPlans } from './lib/plan-files.mjs';
 import { countIncomingLines, trySpendSmallEditBudget } from './lib/small-edit-budget.mjs';
 
@@ -64,3 +65,29 @@ function allow() {
 function block(reason) {
   return { allowed: false, reason };
 }
+
+async function main() {
+  try {
+    const request = JSON.parse(await readStdin());
+    const decision = decideFileWrite({
+      toolName: request.tool_name,
+      toolInput: request.tool_input,
+      sessionId: request.session_id,
+    });
+    if (decision.allowed) process.exit(0);
+    process.stderr.write(decision.reason);
+    process.exit(2);
+  } catch (error) {
+    // 훅이 죽을 때 통과시키면 계획 없는 코드가 조용히 써지므로 차단한다.
+    process.stderr.write(`code-planner 훅 오류로 차단했습니다: ${error.message}`);
+    process.exit(2);
+  }
+}
+
+async function readStdin() {
+  let input = '';
+  for await (const chunk of process.stdin) input += chunk;
+  return input;
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

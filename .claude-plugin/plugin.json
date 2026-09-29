@@ -1,0 +1,10 @@
+{
+  "name": "code-planner",
+  "description": "코드를 쓰기 전에 질문 → 계획 → 승인을 거치게 하고, 규칙 코드는 테스트를 먼저 쓰게 하는 스킬과 훅",
+  "version": "0.1.0",
+  "author": { "name": "jhkimm96" },
+  "homepage": "https://github.com/jhkimm96/code-planner",
+  "repository": "https://github.com/jhkimm96/code-planner",
+  "license": "MIT",
+  "keywords": ["planning", "tdd", "code-quality", "hooks"]
+}

@@ -3,7 +3,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { decideFileWrite } from './check-plan.mjs';
+
+const HOOK_SCRIPT = fileURLToPath(new URL('./check-plan.mjs', import.meta.url));
 
 function createProject({ files = {}, plans = {} } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'cp-project-'));
@@ -138,4 +142,28 @@ test('같은 파일을 나눠 고쳐 누적 5줄을 넘으면 막는다', () => 
 test('계획 파일이 있어도 docs/code-plans 밖의 md 계획은 읽지 않는다', () => {
   const root = createProject({ files: { 'plan.md': planFor('src/app.py') } });
   assert.equal(decide(writeRequest(root, 'src/app.py')).allowed, false);
+});
+
+function runHook(stdin) {
+  return spawnSync(process.execPath, ['--no-warnings', HOOK_SCRIPT], { input: stdin, encoding: 'utf8' });
+}
+
+test('훅 프로세스는 통과면 exit 0이다', () => {
+  const root = createProject();
+  const input = { session_id: 's1', tool_name: 'Write', tool_input: { file_path: path.join(root, 'README.md'), content: 'x' } };
+  assert.equal(runHook(JSON.stringify(input)).status, 0);
+});
+
+test('훅 프로세스는 차단이면 exit 2와 이유를 stderr에 쓴다', () => {
+  const root = createProject();
+  const input = { session_id: 's1', tool_name: 'Write', tool_input: { file_path: path.join(root, 'src/app.py'), content: 'x' } };
+  const result = runHook(JSON.stringify(input));
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /code-planner로 계획을 먼저 세우고 승인받으세요/);
+});
+
+test('훅이 오류로 죽으면 차단한다', () => {
+  const result = runHook('{ not json');
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /code-planner 훅 오류로 차단했습니다/);
 });
