@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Readable Code"
+  short_description: "초급 개발자도 이해할 수 있는 단순한 코드 구현"
+  default_prompt: "Use $write-readable-code to implement this change with a clear domain flow and intuitive names."
